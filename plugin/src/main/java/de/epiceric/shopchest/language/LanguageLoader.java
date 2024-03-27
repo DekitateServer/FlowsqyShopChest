@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import de.epiceric.shopchest.language.enchantment.DummyEnchantmentNameManager;
+import de.epiceric.shopchest.language.enchantment.EnchantmentNameManager;
+import de.epiceric.shopchest.language.enchantment.LocalizedEnchantmentNameManager;
 import org.jetbrains.annotations.NotNull;
 
 import de.epiceric.shopchest.ShopChest;
@@ -19,7 +22,8 @@ public class LanguageLoader {
     private final static String DEFAULT_LOCALE = "en_US";
     private final static String MESSAGES_FILENAME = "messages";
     private final static String ITEMS_FILENAME = "items";
-
+    private final static String ENCHANTMENTS_FILENAME = "enchantments";
+    private final static String POTION_EFFECTS_FILENAME = "potion-effects";
     private final ShopChest shopChestPlugin;
     private final String locale;
     private final Logger logger;
@@ -38,7 +42,8 @@ public class LanguageLoader {
     public LanguageManager loadLanguageManager() {
         final MessageRegistry messageRegistry = loadMessageRegistry();
         final ItemNameManager itemNameManager = loadItemNameManager();
-        return new LanguageManager(messageRegistry, itemNameManager);
+        final EnchantmentNameManager enchantmentNameManager = loadEnchantmentNameManager();
+        return new LanguageManager(messageRegistry, itemNameManager, enchantmentNameManager);
     }
 
     @NotNull
@@ -77,6 +82,24 @@ public class LanguageLoader {
             return new DummyItemNameManager();
         }
         return new LocalizedItemNameManager(storedItems);
+    }
+
+    @NotNull
+    private EnchantmentNameManager loadEnchantmentNameManager() {
+        final String enchantmentSavePath = getSavePath(getLocalizedFileName(ENCHANTMENTS_FILENAME, locale));
+        final String enchantmentsResourcePath = getResourcePath(getFullFileName(ENCHANTMENTS_FILENAME));
+        final File enchantmentsFile;
+        try {
+            enchantmentsFile = fileLoader.loadFile(enchantmentSavePath, shopChestPlugin, enchantmentsResourcePath);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        final Map<String, String> storedEnchantments = languageConfigurationLoader.getTranslations(enchantmentsFile, logger);
+        if(storedEnchantments.isEmpty()) {
+            logger.warning("You have to configure items language file. Follow the usage section on github");
+            return new DummyEnchantmentNameManager();
+        }
+        return new LocalizedEnchantmentNameManager(storedEnchantments);
     }
 
     @NotNull

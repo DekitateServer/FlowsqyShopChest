@@ -4,10 +4,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +63,12 @@ public class LocalizedItemNameManager implements ItemNameManager {
             return String.format(defaultName, ownerName);
         }
 
+        if (meta instanceof PotionMeta) {
+            PotionType potionType = ((PotionMeta) meta).getBasePotionData().getType();
+            boolean upgraded = ((PotionMeta) meta).getBasePotionData().isUpgraded();
+
+            return getCached("item.minecraft." + stack.getType().getKey().getKey() + ".effect." + potionType.name().toLowerCase()) + (upgraded ? " II" : "");
+        }
         return getDefaultName(stack);
     }
 
