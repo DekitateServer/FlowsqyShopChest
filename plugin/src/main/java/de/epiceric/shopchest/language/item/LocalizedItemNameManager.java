@@ -35,6 +35,15 @@ public class LocalizedItemNameManager implements ItemNameManager {
             return null;
         }
 
+        if (stack.getType().getKey().getKey().startsWith("music_disc_")){
+            try {
+                return getCached(stack.getTranslationKey() + ".desc");
+            } catch (Exception e) {
+                ShopChest.getInstance().getLogger().log(Level.SEVERE, e.getMessage());
+                return ERROR_ITEM_NAME;
+            }
+        }
+
         final ItemMeta meta;
         if (!stack.hasItemMeta() || (meta = stack.getItemMeta()) == null) {
             return getDefaultName(stack);
@@ -67,8 +76,14 @@ public class LocalizedItemNameManager implements ItemNameManager {
             PotionType potionType = ((PotionMeta) meta).getBasePotionData().getType();
             boolean upgraded = ((PotionMeta) meta).getBasePotionData().isUpgraded();
 
-            return getCached("item.minecraft." + stack.getType().getKey().getKey() + ".effect." + potionType.name().toLowerCase()) + (upgraded ? " II" : "");
-        }
+            try {
+                return getCached("item.minecraft." + stack.getType().getKey().getKey() + ".effect." + potionType.name().toLowerCase()) + (upgraded ? " II" : "");
+            } catch (Exception e) {
+                ShopChest.getInstance().getLogger().log(Level.SEVERE, e.getMessage());
+                return ERROR_ITEM_NAME;
+            }
+         }
+
         return getDefaultName(stack);
     }
 
