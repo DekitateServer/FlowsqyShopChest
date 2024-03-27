@@ -23,7 +23,6 @@ public class LanguageLoader {
     private final static String MESSAGES_FILENAME = "messages";
     private final static String ITEMS_FILENAME = "items";
     private final static String ENCHANTMENTS_FILENAME = "enchantments";
-    private final static String POTION_EFFECTS_FILENAME = "potion-effects";
     private final ShopChest shopChestPlugin;
     private final String locale;
     private final Logger logger;
