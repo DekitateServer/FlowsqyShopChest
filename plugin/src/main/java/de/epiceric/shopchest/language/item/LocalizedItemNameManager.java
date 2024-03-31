@@ -7,7 +7,9 @@ import java.util.logging.Level;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +30,15 @@ public class LocalizedItemNameManager implements ItemNameManager {
     public String getItemName(@Nullable ItemStack stack) {
         if (stack == null) {
             return null;
+        }
+
+        if (stack.getType().getKey().getKey().startsWith("music_disc_")) {
+            try {
+                return getCached(stack.getTranslationKey() + ".desc");
+            } catch (Exception e) {
+                ShopChest.getInstance().getLogger().log(Level.SEVERE, e.getMessage());
+                return ERROR_ITEM_NAME;
+            }
         }
 
         final ItemMeta meta;
@@ -57,6 +68,18 @@ public class LocalizedItemNameManager implements ItemNameManager {
             }
             return String.format(defaultName, ownerName);
         }
+
+        if (meta instanceof PotionMeta) {
+            PotionType potionType = ((PotionMeta) meta).getBasePotionData().getType();
+            boolean upgraded = ((PotionMeta) meta).getBasePotionData().isUpgraded();
+
+            try {
+                return getCached("item.minecraft." + stack.getType().getKey().getKey() + ".effect." + potionType.name().toLowerCase()) + (upgraded ? " II" : "");
+            } catch (Exception e) {
+                ShopChest.getInstance().getLogger().log(Level.SEVERE, e.getMessage());
+                return ERROR_ITEM_NAME;
+            }
+         }
 
         return getDefaultName(stack);
     }

@@ -265,8 +265,8 @@ public class Shop {
         requirements.put(HologramFormat.Requirement.AMOUNT, getProduct().getAmount());
         requirements.put(HologramFormat.Requirement.ITEM_TYPE, itemStack.getType() + (itemStack.getDurability() > 0 ? ":" + itemStack.getDurability() : ""));
         requirements.put(HologramFormat.Requirement.ITEM_NAME, itemStack.hasItemMeta() ? itemStack.getItemMeta().getDisplayName() : null);
-        //TODO Link it
-        //requirements.put(HologramFormat.Requirement.HAS_ENCHANTMENT, !LanguageUtils.getEnchantmentString(ItemUtils.getEnchantments(itemStack)).isEmpty());
+        requirements.put(HologramFormat.Requirement.HAS_ENCHANTMENT,
+                !ShopChest.getInstance().getLanguageManager().getEnchantmentNameManager().getEnchantmentName(ItemUtils.getEnchantments(itemStack)).isEmpty());
         requirements.put(HologramFormat.Requirement.BUY_PRICE, getBuyPrice());
         requirements.put(HologramFormat.Requirement.SELL_PRICE, getSellPrice());
         requirements.put(HologramFormat.Requirement.HAS_POTION_EFFECT, ItemUtils.getPotionEffect(itemStack) != null);
@@ -286,14 +286,13 @@ public class Shop {
         placeholders.put(Placeholder.VENDOR, getVendor().getName());
         placeholders.put(Placeholder.AMOUNT, getProduct().getAmount());
         placeholders.put(Placeholder.ITEM_NAME, getProduct().getLocalizedName());
-        //TODO Link it
-        //placeholders.put(Placeholder.ENCHANTMENT, LanguageUtils.getEnchantmentString(ItemUtils.getEnchantments(itemStack)));
+        placeholders.put(Placeholder.ENCHANTMENT,
+            ShopChest.getInstance().getLanguageManager().getEnchantmentNameManager().getEnchantmentName(ItemUtils.getEnchantments(itemStack)));
         placeholders.put(Placeholder.BUY_PRICE, getBuyPrice());
         placeholders.put(Placeholder.SELL_PRICE, getSellPrice());
-        //TODO Link it
+        //placeholders.put(Placeholder.POTION_EFFECT, ShopChest.getInstance().getLanguageManager().getPotionEffectNameManager().getPotionEffectName(itemStack));
+        placeholders.put(Placeholder.MUSIC_TITLE, getProduct().getLocalizedName());
         /*
-        placeholders.put(Placeholder.POTION_EFFECT, LanguageUtils.getPotionEffectName(itemStack));
-        placeholders.put(Placeholder.MUSIC_TITLE, LanguageUtils.getMusicDiscName(itemStack.getType()));
         placeholders.put(Placeholder.BANNER_PATTERN_NAME, LanguageUtils.getBannerPatternName(itemStack.getType()));
         placeholders.put(Placeholder.GENERATION, LanguageUtils.getBookGenerationName(itemStack));
         */
