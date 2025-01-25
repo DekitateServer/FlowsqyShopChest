@@ -53,7 +53,7 @@ public class LocalizedItemNameManager implements ItemNameManager {
 
         if (meta instanceof BookMeta) {
             final String bookTitle = ((BookMeta) meta).getTitle();
-            if(bookTitle!=null && !bookTitle.isEmpty()){
+            if (bookTitle != null && !bookTitle.isEmpty()) {
                 return bookTitle;
             }
         }
