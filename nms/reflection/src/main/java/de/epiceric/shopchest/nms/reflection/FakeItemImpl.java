@@ -15,9 +15,12 @@ public class FakeItemImpl extends FakeEntityImpl implements FakeItem {
     private final Class<?> packetPlayOutEntityVelocityClass = nmsClassResolver.resolveSilent("network.protocol.game.PacketPlayOutEntityVelocity");
     private final Class<?> vec3dClass = nmsClassResolver.resolveSilent("world.phys.Vec3D");
     private final Class<?> craftItemStackClass = obcClassResolver.resolveSilent("inventory.CraftItemStack");
+    private final EntityType DROPPED_ITEM;
 
     public FakeItemImpl(ShopChestDebug debug) {
         super(debug);
+
+        DROPPED_ITEM = loadDroppedItemsEntityType();
 
         Class<?> nmsItemStackClass = nmsClassResolver.resolveSilent("world.item.ItemStack");
 
@@ -31,6 +34,16 @@ public class FakeItemImpl extends FakeEntityImpl implements FakeItem {
                 debug.debug("Failed to create shop item: Could not find all required classes");
                 return;
             }
+        }
+    }
+
+    private EntityType loadDroppedItemsEntityType() {
+        // The constant name changed in 1.20.5
+        // Doing this ensure compatibility with older version when using reflection nms module
+        try {
+            return EntityType.valueOf("DROPPED_ITEM");
+        } catch (IllegalArgumentException e) {
+            return EntityType.ITEM;
         }
     }
 
@@ -72,7 +85,7 @@ public class FakeItemImpl extends FakeEntityImpl implements FakeItem {
     @Override
     public void spawn(UUID uuid, Location location, Iterable<Player> receivers) {
         for(Player receiver : receivers) {
-            ReflectionUtils.sendPacket(debug, ReflectionUtils.createPacketSpawnEntity(debug, entityId, uuid, location, EntityType.DROPPED_ITEM), receiver);
+            ReflectionUtils.sendPacket(debug, ReflectionUtils.createPacketSpawnEntity(debug, entityId, uuid, location, DROPPED_ITEM), receiver);
         }
     }
 }

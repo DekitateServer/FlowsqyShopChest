@@ -4,7 +4,6 @@
 #
 # Lines starting with '#' are comments and are ignored by the server.
 #
-# You can find item names in the 'item_names.txt' file.
 
 # Set the main command you have to enter to manage the shops.
 # (default: "/shop ...")

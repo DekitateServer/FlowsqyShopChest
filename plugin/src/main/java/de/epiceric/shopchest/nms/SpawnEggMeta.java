@@ -9,7 +9,21 @@ import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 import de.epiceric.shopchest.ShopChest;
 import de.epiceric.shopchest.utils.Utils;
 	
-public class SpawnEggMeta {	
+public class SpawnEggMeta {
+
+    private final static EntityType MOOSHROOM;
+
+    static {
+        // The constant name changed in 1.20.5
+        // Doing this ensure compatibility with older version when using reflection nms module
+        EntityType MOOSHROOM_ENTITY_TYPE;
+        try {
+            MOOSHROOM_ENTITY_TYPE = EntityType.valueOf("MUSHROOM_COW");
+        } catch (IllegalArgumentException e) {
+            MOOSHROOM_ENTITY_TYPE = EntityType.MOOSHROOM;
+        }
+        MOOSHROOM = MOOSHROOM_ENTITY_TYPE;
+    }
 	
     private static String getNBTEntityID(ShopChest plugin, ItemStack stack) {	
         try {
@@ -77,7 +91,7 @@ public class SpawnEggMeta {
             case "LavaSlime":	
                 return EntityType.MAGMA_CUBE;	
             case "MushroomCow":	
-                return EntityType.MUSHROOM_COW;	
+                return MOOSHROOM;
             case "EntityHorse":	
                 return EntityType.HORSE;	
             case "PolarBear":	

@@ -21,6 +21,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,10 +31,24 @@ class ShopCommandExecutor implements CommandExecutor {
 
     private ShopChest plugin;
     private ShopUtils shopUtils;
+    private final Enchantment UNBREAKING_ENCHANT;
 
     ShopCommandExecutor(ShopChest plugin) {
         this.plugin = plugin;
         this.shopUtils = plugin.getShopUtils();
+        UNBREAKING_ENCHANT = loadUnbreakingEnchant();
+    }
+
+    private Enchantment loadUnbreakingEnchant() {
+        // The constant name changed in 1.20.5
+        // Doing this ensure compatibility with older version when using older version
+        try {
+            final Field field = Enchantment.class.getDeclaredField("DURABILITY");
+            field.setAccessible(true);
+            return (Enchantment) field.get(null);
+        } catch (ReflectiveOperationException e) {
+            return Enchantment.UNBREAKING;
+        }
     }
 
     @Override
@@ -422,7 +437,7 @@ class ShopCommandExecutor implements CommandExecutor {
             }
         }
 
-        if (Enchantment.DURABILITY.canEnchantItem(itemStack)) {
+        if (UNBREAKING_ENCHANT.canEnchantItem(itemStack)) {
             if (itemStack.getDurability() > 0 && !Config.allowBrokenItems) {
                 p.sendMessage(messageRegistry.getMessage(Message.CANNOT_SELL_BROKEN_ITEM));
                 plugin.debug(p.getName() + "'s item is broken");

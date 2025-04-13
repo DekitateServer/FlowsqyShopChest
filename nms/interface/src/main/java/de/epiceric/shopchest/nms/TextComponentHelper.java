@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +29,12 @@ public interface TextComponentHelper {
      * @param itemStack The item stack that will be displayed
      * @return A string representing a json object of the 'tag'
      */
-    String getNbt(ItemStack itemStack);
+    default String getNbt(ItemStack itemStack) {
+        if(!itemStack.hasItemMeta()) {
+            return "{}";
+        }
+        return Objects.requireNonNull(itemStack.getItemMeta()).getAsString();
+    }
 
     default Consumer<Player> getSendableItemInfo(String message, String itemPlaceHolder, ItemStack itemStack, String productName){
         final TextComponent baseComponent = new TextComponent();

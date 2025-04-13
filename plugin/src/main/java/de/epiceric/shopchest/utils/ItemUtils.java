@@ -27,7 +27,9 @@ public class ItemUtils {
             if (Utils.getMajorVersion() < 9) {
                 return Potion.fromItemStack(itemStack).getType();
             } else {
-                return ((PotionMeta) itemStack.getItemMeta()).getBasePotionData().getType();
+                // TODO Maybe save reimplement the old version
+                //return ((PotionMeta) itemStack.getItemMeta()).getBasePotionData().getType();
+                return ((PotionMeta)itemStack.getItemMeta()).getBasePotionType();
             }
         }
 
@@ -39,7 +41,9 @@ public class ItemUtils {
             if (Utils.getMajorVersion() < 9) {
                 return Potion.fromItemStack(itemStack).hasExtendedDuration();
             } else {
-                return ((PotionMeta) itemStack.getItemMeta()).getBasePotionData().isExtended();
+                // TODO Maybe save reimplement the old version
+                //return ((PotionMeta) itemStack.getItemMeta()).getBasePotionData().isExtended();
+                return false; // I have no idea how to get the base duration of a potion without loading it at startup
             }
         }
 

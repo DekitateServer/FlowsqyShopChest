@@ -6,6 +6,8 @@ public interface Platform {
 
     FakeItem createFakeItem();
 
-    TextComponentHelper getTextComponentHelper();
+    default TextComponentHelper getTextComponentHelper() {
+        return new DefaultTextComponentHelper();
+    }
 
 }

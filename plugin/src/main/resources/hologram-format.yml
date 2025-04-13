@@ -9,7 +9,7 @@
 # IN_STOCK, MAX_STACK, CHEST_SPACE, DURABILITY
 #
 # You can also use the requirements for conditions.
-# ITEM_TYPE will return the type of the item (-> item_names.txt),
+# ITEM_TYPE will return the type of the item (-> See Bukkit Material enum),
 # ITEM_NAME can be compared against a custom named item's name (may be null).
 #
 # Examples:

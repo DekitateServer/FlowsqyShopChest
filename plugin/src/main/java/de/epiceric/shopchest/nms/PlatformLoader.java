@@ -1,12 +1,13 @@
 package de.epiceric.shopchest.nms;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.bukkit.Bukkit;
+
 import de.epiceric.shopchest.nms.reflection.PlatformImpl;
 import de.epiceric.shopchest.nms.reflection.ShopChestDebug;
 import de.epiceric.shopchest.utils.Utils;
-import org.bukkit.Bukkit;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public class PlatformLoader {
 
@@ -17,19 +18,25 @@ public class PlatformLoader {
     }
 
     public Platform loadPlatform() {
-        final String nmsVersion = Utils.getServerVersion();
-
-        Platform platform = getReflectionPlatform(nmsVersion);
-        if (platform != null) {
+        Platform platform = null;
+        if (Utils.getMajorVersion() < 17) {
+            final String bukkitPackageVersion = getBukkitPackageVersion();
+            platform = getReflectionPlatform(bukkitPackageVersion);
+            if (platform == null) {
+                throw new RuntimeException(
+                        "Could not retrieve the mappings version. The server version might be too old ("
+                                + bukkitPackageVersion + ").");
+            }
             return platform;
         }
         final String mappingsVersion = getMappingsVersion();
         if (mappingsVersion == null) {
-            throw new RuntimeException("Could not retrieve the mappings version. The server version might be too old (" + nmsVersion + ").");
+            throw new RuntimeException("Could not get any information about the server version");
         }
         platform = getSpecificPlatform(mappingsVersion);
         if (platform == null) {
-            throw new RuntimeException("Server version not officially supported. Version: '" + nmsVersion + "', Mappings : " + "'" + mappingsVersion + "'");
+            throw new RuntimeException(
+                    "Server version not officially supported. Mappings : " + "'" + mappingsVersion + "'");
         }
         return platform;
     }
@@ -57,9 +64,15 @@ public class PlatformLoader {
         }
     }
 
+    private String getBukkitPackageVersion() {
+        final String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        return packageName.substring(packageName.lastIndexOf(".") + 1);
+    }
+
     private String getMappingsVersion() {
         try {
-            final String craftMagicNumbersClassName = Bukkit.getServer().getClass().getPackage().getName() + ".util.CraftMagicNumbers";
+            final String craftMagicNumbersClassName = Bukkit.getServer().getClass().getPackage().getName()
+                    + ".util.CraftMagicNumbers";
             final Class<?> craftMagicNumbersClass = Class.forName(craftMagicNumbersClassName);
             final Method method = craftMagicNumbersClass.getDeclaredMethod("getMappingsVersion");
             method.setAccessible(true);
@@ -93,10 +106,22 @@ public class PlatformLoader {
             case "34f399b4f2033891290b7f0700e9e47b": // 1.20
             case "bcf3dcb22ad42792794079f9443df2c0": // 1.20.1 (v1_20_R1)
                 return new de.epiceric.shopchest.nms.v1_20_R1.PlatformImpl();
-            case "3478a65bfd04b15b431fe107b3617dfc": //1.20.2
+            case "3478a65bfd04b15b431fe107b3617dfc": // 1.20.2 (v1_20_R2)
                 return new de.epiceric.shopchest.nms.v1_20_R2.PlatformImpl();
-            case "60a2bb6bf2684dc61c56b90d7c41bddc": //1.20.4 (1.20.3 virtually does not exist)
+            case "60a2bb6bf2684dc61c56b90d7c41bddc": // 1.20.4 (1.20.3 virtually does not exist)
                 return new de.epiceric.shopchest.nms.v1_20_R3.PlatformImpl();
+            case "ad1a88fd7eaf2277f2507bf34d7b994c": // 1.20.5 (Replaced by 1.20.6)
+            case "ee13f98a43b9c5abffdcc0bb24154460": // 1.20.6 (v1_20_R4)
+                return new de.epiceric.shopchest.nms.v1_20_R4.PlatformImpl();
+            case "229d7afc75b70a6c388337687ac4da1f": // 1.21
+            case "7092ff1ff9352ad7e2260dc150e6a3ec": // 1.21.1 (v1_21_R1)
+                return new de.epiceric.shopchest.nms.v1_21_R1.PlatformImpl();
+            case "61a218cda78417b6039da56e08194083": // 1.21.3 (v1_21_R2)
+                return new de.epiceric.shopchest.nms.v1_21_R2.PlatformImpl();
+            case "60ac387ca8007aa018e6aeb394a6988c": // 1.21.4 (v1_21_R3)
+                return new de.epiceric.shopchest.nms.v1_21_R3.PlatformImpl();
+            case "7ecad754373a5fbc43d381d7450c53a5": // 1.21.5 (v1_21_R4)
+                return new de.epiceric.shopchest.nms.v1_21_R4.PlatformImpl();
             default:
                 return null;
         }
