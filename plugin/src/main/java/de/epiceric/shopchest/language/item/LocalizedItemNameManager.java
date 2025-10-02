@@ -72,17 +72,26 @@ public class LocalizedItemNameManager implements ItemNameManager {
             return String.format(defaultName, ownerName);
         }
 
-        if (meta instanceof PotionMeta) {
-            PotionType potionType = ((PotionMeta) meta).getBasePotionData().getType();
-            boolean upgraded = ((PotionMeta) meta).getBasePotionData().isUpgraded();
+        if (meta instanceof PotionMeta potionMeta) {
+            PotionType type = potionMeta.getBasePotionType();
+
+            if (type == null) {
+                return ERROR_ITEM_NAME;
+            }
+
+            String effectKey = type.getKey().getKey();
+            String itemKey = stack.getType().getKey().getKey();
 
             try {
-                return getCached("item.minecraft." + stack.getType().getKey().getKey() + ".effect." + potionType.name().toLowerCase()) + (upgraded ? " II" : "");
+                String key = "item.minecraft." + itemKey + ".effect." + effectKey;
+                String name = getCached(key);
+
+                return !name.isEmpty() ? name : ERROR_ITEM_NAME;
             } catch (Exception e) {
                 ShopChest.getInstance().getLogger().log(Level.SEVERE, e.getMessage());
                 return ERROR_ITEM_NAME;
             }
-         }
+        }
 
         return getDefaultName(stack);
     }
