@@ -1,6 +1,7 @@
 plugins {
     id("buildlogic.java-spigot-conventions")
     id("com.gradleup.shadow") version "9.0.0-rc1"
+    id("maven-publish")
 }
 
 repositories {
@@ -85,4 +86,15 @@ version = "1.15.0-SNAPSHOT"
 
 tasks.processResources {
     expand(Pair("version", version))
+}
+
+
+publishing {
+    publications {
+        create<MavenPublication>("plugin") {
+            groupId = "de.epiceric"
+            from(components["java"])
+            artifactId = "shopchest-plugin"
+        }
+    }
 }
