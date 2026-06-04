@@ -1,9 +1,9 @@
 package de.epiceric.shopchest.language.item;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Level;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -60,13 +60,16 @@ public class LocalizedItemNameManager implements ItemNameManager {
 
         if (meta instanceof SkullMeta) {
             final SkullMeta skullMeta = (SkullMeta) meta;
-            if (!skullMeta.hasOwner()) {
-                return getDefaultName(stack);
-            }
-            skullMeta.getOwningPlayer();
             final String defaultName = getDefaultName(stack);
-            final String ownerName = Objects.requireNonNull(skullMeta.getOwningPlayer()).getName();
-            if (ownerName == null) {
+            if (!skullMeta.hasOwner()) {
+                return defaultName;
+            }
+            final OfflinePlayer owner = skullMeta.getOwningPlayer();
+            if (owner == null) {
+                return defaultName;
+            }
+            final String ownerName = owner.getName();
+            if (ownerName == null || ownerName.isEmpty()) {
                 return defaultName;
             }
             return String.format(defaultName, ownerName);
